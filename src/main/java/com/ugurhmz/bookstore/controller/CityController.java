@@ -4,6 +4,7 @@ package com.ugurhmz.bookstore.controller;
 import com.ugurhmz.bookstore.dto.requestDto.CityRequestDto;
 import com.ugurhmz.bookstore.dto.responseDto.CityResponseDto;
 import com.ugurhmz.bookstore.entities.City;
+import com.ugurhmz.bookstore.helper.Mapper;
 import com.ugurhmz.bookstore.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,18 +47,14 @@ public class CityController {
 
     // GET ALL
     @GetMapping("/all-cities")
-    public ResponseEntity<?> getAllCities() {
+    public ResponseEntity<Map<String, Object>> getAllCities() {
         try {
             List<City> cities = cityService.getAllCities();
-            List<String> cityNames = cities.stream()
-                    .map(City::getName)
-                    .collect(Collectors.toList());
-
-            CityResponseDto cityResponse = new CityResponseDto(cityNames);
-
+            CityResponseDto cityResponse = Mapper.citiesToCityResDTO(cities);
+            System.out.println("cityResponse: "+cityResponse);
             return cities.isEmpty()
                     ? new ResponseEntity<>(Collections.singletonMap("error", "No cities found!"), HttpStatus.NOT_FOUND)
-                    : new ResponseEntity<>(cityResponse, HttpStatus.OK);
+                    : new ResponseEntity<>(Collections.singletonMap("cityList", cityResponse), HttpStatus.OK);
 
         } catch (Exception e) {
             String errorMessage = "Error while retrieving cities: " + e.getMessage();
@@ -67,17 +64,25 @@ public class CityController {
 
     // GET ONE
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, String>> getOneCityWithId(@PathVariable final Long id) {
-        try {
-            City city = cityService.getOneCity(id);
-            String message = city.getName();
-            return new ResponseEntity<>(Collections.singletonMap("message", message), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(Collections.singletonMap("error", e.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(Collections.singletonMap("error", "Error while retrieving city: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    public ResponseEntity<Map<String, Object>> getOneCityWithId(@PathVariable final Long id) {
+      try {
+          City city = cityService.getOneCity(id);
+          CityResponseDto cityResponseDto = Mapper.cityToCityResDTO(city);
+
+          Map<String, Object> responseData = new HashMap<>();
+          responseData.put("data", cityResponseDto.getNamesCity().get(0));
+
+          return new ResponseEntity<>(responseData, HttpStatus.OK);
+      } catch (IllegalArgumentException e) {
+          Map<String, Object> errorResponse = new HashMap<>();
+          errorResponse.put("error", e.getMessage());
+          return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+      } catch (Exception e) {
+          Map<String, Object> errorResponse = new HashMap<>();
+          errorResponse.put("error", "Error while retrieving city: " + e.getMessage());
+          return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+  }
 
     // DELETE CITY
     @DeleteMapping("/delete/{id}")

@@ -11,5 +11,4 @@ public class CityResponseDto {
     public CityResponseDto(List<String> names) {
         this.namesCity = names;
     }
-
 }

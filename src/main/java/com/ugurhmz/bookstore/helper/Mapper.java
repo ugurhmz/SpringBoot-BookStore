@@ -4,12 +4,16 @@ package com.ugurhmz.bookstore.helper;
 import com.ugurhmz.bookstore.dto.responseDto.AuthorResponseDto;
 import com.ugurhmz.bookstore.dto.responseDto.BookResponseDto;
 import com.ugurhmz.bookstore.dto.responseDto.CategoryResponseDto;
+import com.ugurhmz.bookstore.dto.responseDto.CityResponseDto;
 import com.ugurhmz.bookstore.entities.Author;
 import com.ugurhmz.bookstore.entities.Book;
 import com.ugurhmz.bookstore.entities.Category;
+import com.ugurhmz.bookstore.entities.City;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Mapper {
 
@@ -69,5 +73,14 @@ public class Mapper {
         return categoryResponseDtos;
     }
 
+    public static CityResponseDto cityToCityResDTO(City city) {
+        return new CityResponseDto(List.of(city.getName()));
+    }
 
+    public static CityResponseDto citiesToCityResDTO(List<City> cities) {
+        List<String> cityNames = cities.stream()
+                .map(City::getName)
+                .collect(Collectors.toList());
+        return new CityResponseDto(cityNames);
+    }
 }
