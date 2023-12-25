@@ -41,7 +41,8 @@ public class CityServiceImply implements CityService {
     // GET CITY
     @Override
     public City getOneCity(Long cityId) {
-        return null;
+       return cityRepository.findById(cityId).orElseThrow(
+               () -> new IllegalArgumentException(cityId + " : City not  found!!"));
     }
 
     // UPDATE CITY
