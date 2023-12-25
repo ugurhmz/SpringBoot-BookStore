@@ -28,5 +28,11 @@ public class Category {
         this.bookList = bookList;
     }
 
+    public void addBook(Book book) {
+        bookList.add(book);
+    }
 
+    public void removeBook(Book book) {
+        bookList.remove(book);
+    }
 }

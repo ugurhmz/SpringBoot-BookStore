@@ -38,4 +38,12 @@ public class Book {
         this.authorList = authorList;
         this.category = category;
     }
+
+    public void addAuthor(Author author) {
+        authorList.add(author);
+    }
+
+    public void deleteAuthor(Author author) {
+        authorList.remove(author);
+    }
 }
