@@ -54,6 +54,10 @@ public class CityServiceImply implements CityService {
     // DELETE CITY
     @Override
     public City deleteCity(Long cityId) {
-        return null;
+        City deleteToCity = cityRepository.findById(cityId)
+                .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + cityId));
+
+        cityRepository.delete(deleteToCity);
+        return deleteToCity;
     }
 }

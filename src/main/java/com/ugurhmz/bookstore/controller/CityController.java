@@ -81,6 +81,21 @@ public class CityController {
     }
 
 
+    // DELETE CITY
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Map<String, String>> deleteCity(@PathVariable final Long id) {
+        try {
+          City deletedCity = cityService.deleteCity(id);
+          String msg = "Deletion successful, deleted city name: "+ deletedCity.getName() + ", id: " + deletedCity.getId();
+          return new ResponseEntity<>(Collections.singletonMap("message", msg), HttpStatus.OK);
 
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(Collections.singletonMap("error",e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            String myErrorMessage = "Error while deleting city: " + e.getMessage();
+            return new ResponseEntity<>(Collections.singletonMap("error", myErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
 }
