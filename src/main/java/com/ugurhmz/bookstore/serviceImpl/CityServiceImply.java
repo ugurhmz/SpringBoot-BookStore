@@ -4,6 +4,7 @@ import com.ugurhmz.bookstore.dto.requestDto.CityRequestDto;
 import com.ugurhmz.bookstore.entities.City;
 import com.ugurhmz.bookstore.repository.CityRepository;
 import com.ugurhmz.bookstore.service.CityService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,9 @@ public class CityServiceImply implements CityService {
         this.cityRepository = cityRepository;
     }
 
-
     // CREATE
     @Override
+    @Transactional
     public City createCity(CityRequestDto cityRequestDto) {
         City city = new City();
         city.setName(cityRequestDto.getName());
@@ -47,12 +48,18 @@ public class CityServiceImply implements CityService {
 
     // UPDATE CITY
     @Override
+    @Transactional
     public City updateCity(Long cityId, CityRequestDto cityRequestDto) {
-        return null;
+        City existingCity = cityRepository.findById(cityId)
+                .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + cityId));
+        existingCity.setName(cityRequestDto.getName());
+
+        return cityRepository.save(existingCity);
     }
 
     // DELETE CITY
     @Override
+    @Transactional
     public City deleteCity(Long cityId) {
         City deleteToCity = cityRepository.findById(cityId)
                 .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + cityId));

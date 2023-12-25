@@ -44,7 +44,6 @@ public class CityController {
                 .orElse(new ResponseEntity<>(Collections.singletonMap("error", "City name cannot be empty or null"), HttpStatus.BAD_REQUEST));
     }
 
-
     // GET ALL
     @GetMapping("/all-cities")
     public ResponseEntity<?> getAllCities() {
@@ -80,7 +79,6 @@ public class CityController {
         }
     }
 
-
     // DELETE CITY
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, String>> deleteCity(@PathVariable final Long id) {
@@ -96,6 +94,29 @@ public class CityController {
             return new ResponseEntity<>(Collections.singletonMap("error", myErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    // UPDATE
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Map<String, String>> updateCity(
+            @PathVariable final Long id,
+            @RequestBody CityRequestDto cityRequestDto) {
+
+        if (cityRequestDto == null || cityRequestDto.getName() == null || cityRequestDto.getName().trim().isEmpty()) {
+            String myMsg = "Cannot be null or empty !!";
+            return new ResponseEntity<>(Collections.singletonMap("error", myMsg), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            City updatedCity = cityService.updateCity(id, cityRequestDto);
+            String message = "Update successful, updated city name: " + updatedCity.getName() + ", id: " + updatedCity.getId();
+            return new ResponseEntity<>(Collections.singletonMap("message", message), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(Collections.singletonMap("error", e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            String myErrorMessage = "Error while updating city: " + e.getMessage();
+            return new ResponseEntity<>(Collections.singletonMap("error", myErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
