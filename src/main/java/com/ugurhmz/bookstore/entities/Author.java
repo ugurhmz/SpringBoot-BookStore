@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -24,7 +23,7 @@ public class Author {
     @JoinColumn(name="postcode_id")
     private PostCode postCode;
 
-    @ManyToMany(mappedBy = "categories", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "authorList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Book> bookList = new ArrayList<>();
 
     public Author(String name, PostCode postCode, List<Book> bookList) {
@@ -40,5 +39,4 @@ public class Author {
     public void removeBook(Book book) {
         bookList.remove(book);
     }
-
 }
