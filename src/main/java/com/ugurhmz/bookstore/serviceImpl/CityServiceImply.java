@@ -7,6 +7,7 @@ import com.ugurhmz.bookstore.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,7 +33,9 @@ public class CityServiceImply implements CityService {
     // GET ALL CITIES
     @Override
     public List<City> getAllCities() {
-        return null;
+        List<City> cities = new ArrayList<>();
+        cityRepository.findAll().forEach(cities::add);
+        return cities;
     }
 
     // GET CITY
