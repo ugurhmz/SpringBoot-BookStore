@@ -25,6 +25,7 @@ public class CityServiceImply implements CityService {
     public City createCity(CityRequestDto cityRequestDto) {
         City city = new City();
         city.setName(cityRequestDto.getName());
+        System.out.println("ServiceIMPL CREATE WORKED.");
         return cityRepository.save(city);
     }
 
