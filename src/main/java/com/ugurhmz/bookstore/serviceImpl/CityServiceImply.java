@@ -1,7 +1,9 @@
 package com.ugurhmz.bookstore.serviceImpl;
 
 import com.ugurhmz.bookstore.dto.requestDto.CityRequestDto;
+import com.ugurhmz.bookstore.dto.responseDto.CityResponseDto;
 import com.ugurhmz.bookstore.entities.City;
+import com.ugurhmz.bookstore.helper.Mapper;
 import com.ugurhmz.bookstore.repository.CityRepository;
 import com.ugurhmz.bookstore.service.CityService;
 import jakarta.transaction.Transactional;
@@ -10,10 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CityServiceImply implements CityService {
-
     private final CityRepository cityRepository;
 
     @Autowired
@@ -21,50 +23,63 @@ public class CityServiceImply implements CityService {
         this.cityRepository = cityRepository;
     }
 
-    // CREATE
     @Override
     @Transactional
-    public City createCity(CityRequestDto cityRequestDto) {
+    public CityResponseDto createCity(CityRequestDto cityRequestDto) {
+        // Boş veya null kontrolü
+        if (cityRequestDto.getName() == null || cityRequestDto.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("City name cannot be empty or null");
+        }
+
         City city = new City();
         city.setName(cityRequestDto.getName());
-        System.out.println("ServiceIMPL CREATE WORKED.");
-        return cityRepository.save(city);
+        City createdCity = cityRepository.save(city);
+        return Mapper.cityToCityResDTO(createdCity);
     }
 
-    // GET ALL CITIES
     @Override
-    public List<City> getAllCities() {
+    public List<String> getAllCities() {
         List<City> cities = new ArrayList<>();
         cityRepository.findAll().forEach(cities::add);
-        return cities;
+
+        // Boş veya null değerleri filtrele
+        return cities.stream()
+                .map(City::getName)
+                .filter(name -> name != null && !name.trim().isEmpty())
+                .collect(Collectors.toList());
     }
 
-    // GET CITY
     @Override
-    public City getOneCity(Long cityId) {
-       return cityRepository.findById(cityId).orElseThrow(
-               () -> new IllegalArgumentException(cityId + " : City not  found!!"));
+    public CityResponseDto getOneCity(Long cityId) {
+        City city = cityRepository.findById(cityId)
+                .orElseThrow(() -> new IllegalArgumentException(cityId + " : City not found!!"));
+
+        return Mapper.cityToCityResDTO(city);
     }
 
-    // UPDATE CITY
     @Override
     @Transactional
-    public City updateCity(Long cityId, CityRequestDto cityRequestDto) {
+    public CityResponseDto updateCity(Long cityId, CityRequestDto cityRequestDto) {
+        // Boş veya null kontrolü
+        if (cityRequestDto.getName() == null || cityRequestDto.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("City name cannot be empty or null");
+        }
+
         City existingCity = cityRepository.findById(cityId)
                 .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + cityId));
+
         existingCity.setName(cityRequestDto.getName());
 
-        return cityRepository.save(existingCity);
+        return Mapper.cityToCityResDTO(existingCity);
     }
 
-    // DELETE CITY
     @Override
     @Transactional
-    public City deleteCity(Long cityId) {
+    public CityResponseDto deleteCity(Long cityId) {
         City deleteToCity = cityRepository.findById(cityId)
                 .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + cityId));
 
         cityRepository.delete(deleteToCity);
-        return deleteToCity;
+        return Mapper.cityToCityResDTO(deleteToCity);
     }
 }

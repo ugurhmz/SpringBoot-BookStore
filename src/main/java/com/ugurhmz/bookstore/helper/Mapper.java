@@ -10,9 +10,7 @@ import com.ugurhmz.bookstore.entities.Book;
 import com.ugurhmz.bookstore.entities.Category;
 import com.ugurhmz.bookstore.entities.City;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Mapper {
@@ -77,10 +75,16 @@ public class Mapper {
         return new CityResponseDto(List.of(city.getName()));
     }
 
-    public static CityResponseDto citiesToCityResDTO(List<City> cities) {
+    public static Map<String, List<String>> citiesToCityResDTO(List<City> cities) {
         List<String> cityNames = cities.stream()
                 .map(City::getName)
                 .collect(Collectors.toList());
-        return new CityResponseDto(cityNames);
+
+        Map<String, List<String>> result = new HashMap<>();
+        result.put("cityList", cityNames);
+
+        return result;
     }
+
+
 }
