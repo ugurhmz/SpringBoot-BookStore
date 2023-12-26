@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,6 @@ public class CityServiceImply implements CityService {
     @Override
     @Transactional
     public CityResponseDto createCity(CityRequestDto cityRequestDto) {
-        // Boş veya null kontrolü
         if (cityRequestDto.getName() == null || cityRequestDto.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("City name cannot be empty or null");
         }
@@ -42,7 +42,7 @@ public class CityServiceImply implements CityService {
         List<City> cities = new ArrayList<>();
         cityRepository.findAll().forEach(cities::add);
 
-        // Boş veya null değerleri filtrele
+        // Boş , null  filter
         return cities.stream()
                 .map(City::getName)
                 .filter(name -> name != null && !name.trim().isEmpty())
@@ -53,23 +53,19 @@ public class CityServiceImply implements CityService {
     public CityResponseDto getOneCity(Long cityId) {
         City city = cityRepository.findById(cityId)
                 .orElseThrow(() -> new IllegalArgumentException(cityId + " : City not found!!"));
-
         return Mapper.cityToCityResDTO(city);
     }
 
     @Override
     @Transactional
     public CityResponseDto updateCity(Long cityId, CityRequestDto cityRequestDto) {
-        // Boş veya null kontrolü
-        if (cityRequestDto.getName() == null || cityRequestDto.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("City name cannot be empty or null");
-        }
-
+        String cityName = Optional.ofNullable(cityRequestDto.getName())
+                .map(String::trim)
+                .orElseThrow(() -> new IllegalArgumentException("City name can not be empty or null!!"));
         City existingCity = cityRepository.findById(cityId)
-                .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + cityId));
+                .orElseThrow( () -> new IllegalArgumentException("City not found with id:  "+ cityId));
 
-        existingCity.setName(cityRequestDto.getName());
-
+        existingCity.setName(cityName);
         return Mapper.cityToCityResDTO(existingCity);
     }
 
