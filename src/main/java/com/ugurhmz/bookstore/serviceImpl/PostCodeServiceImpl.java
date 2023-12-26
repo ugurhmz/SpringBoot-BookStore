@@ -26,6 +26,7 @@ public class PostCodeServiceImpl implements PostCodeService {
         this.cityRepository = cityRepository;
     }
 
+    // CREATE
     @Transactional
     @Override
     public PostCodeResponseDto createPostCode(PostCodeRequestDto postCodeRequestDto) {
@@ -53,7 +54,11 @@ public class PostCodeServiceImpl implements PostCodeService {
 
     @Override
     public PostCodeResponseDto getPostCode(Long postCodeId) {
-        return null;
+       PostCode thatPostCode = postCodeRepository.findById(postCodeId)
+               .orElseThrow(() -> new IllegalArgumentException("Postcode not found with id: "+ postCodeId));
+
+        System.out.println("mypostcode: " + thatPostCode);
+       return Mapper.postCodeToPostCodeResDTO(thatPostCode);
     }
 
     @Override
