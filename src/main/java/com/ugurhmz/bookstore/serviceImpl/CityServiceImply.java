@@ -24,19 +24,24 @@ public class CityServiceImply implements CityService {
         this.cityRepository = cityRepository;
     }
 
+    // CREATE
     @Override
     @Transactional
     public CityResponseDto createCity(CityRequestDto cityRequestDto) {
-        if (cityRequestDto.getName() == null || cityRequestDto.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("City name cannot be empty or null");
-        }
+        String cityName = Optional.ofNullable(cityRequestDto.getName())
+                .map(String::trim)
+                .filter(name -> !name.isEmpty())
+                .orElseThrow(() -> new IllegalArgumentException("City name can not be empty or null"));
 
+        System.out.println("cityName"+cityName);
         City city = new City();
-        city.setName(cityRequestDto.getName());
+        city.setName(cityName);
+
         City createdCity = cityRepository.save(city);
         return Mapper.cityToCityResDTO(createdCity);
     }
 
+    // GET ALL
     @Override
     public List<String> getAllCities() {
         List<City> cities = new ArrayList<>();
@@ -49,6 +54,7 @@ public class CityServiceImply implements CityService {
                 .collect(Collectors.toList());
     }
 
+    // GET ONE
     @Override
     public CityResponseDto getOneCity(Long cityId) {
         City city = cityRepository.findById(cityId)
@@ -56,11 +62,13 @@ public class CityServiceImply implements CityService {
         return Mapper.cityToCityResDTO(city);
     }
 
+    // UPDATE
     @Override
     @Transactional
     public CityResponseDto updateCity(Long cityId, CityRequestDto cityRequestDto) {
         String cityName = Optional.ofNullable(cityRequestDto.getName())
                 .map(String::trim)
+                .filter(name -> !name.isEmpty())
                 .orElseThrow(() -> new IllegalArgumentException("City name can not be empty or null!!"));
         City existingCity = cityRepository.findById(cityId)
                 .orElseThrow( () -> new IllegalArgumentException("City not found with id:  "+ cityId));
@@ -69,6 +77,7 @@ public class CityServiceImply implements CityService {
         return Mapper.cityToCityResDTO(existingCity);
     }
 
+    // DELETE
     @Override
     @Transactional
     public CityResponseDto deleteCity(Long cityId) {

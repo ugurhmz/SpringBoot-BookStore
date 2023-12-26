@@ -31,6 +31,8 @@ public class CityController {
             CityResponseDto cityResponseDto = cityService.createCity(cityRequestDto);
             String message = cityResponseDto.getNamesCity().get(0);
             return new ResponseEntity<>(Collections.singletonMap("message", message), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(Collections.singletonMap("error", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             String errorMessage = "Error while adding city: " + e.getMessage();
             return new ResponseEntity<>(Collections.singletonMap("error", errorMessage), HttpStatus.BAD_REQUEST);
