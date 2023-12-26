@@ -1,14 +1,8 @@
 package com.ugurhmz.bookstore.helper;
 
 
-import com.ugurhmz.bookstore.dto.responseDto.AuthorResponseDto;
-import com.ugurhmz.bookstore.dto.responseDto.BookResponseDto;
-import com.ugurhmz.bookstore.dto.responseDto.CategoryResponseDto;
-import com.ugurhmz.bookstore.dto.responseDto.CityResponseDto;
-import com.ugurhmz.bookstore.entities.Author;
-import com.ugurhmz.bookstore.entities.Book;
-import com.ugurhmz.bookstore.entities.Category;
-import com.ugurhmz.bookstore.entities.City;
+import com.ugurhmz.bookstore.dto.responseDto.*;
+import com.ugurhmz.bookstore.entities.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,6 +78,10 @@ public class Mapper {
         result.put("cityList", cityNames);
 
         return result;
+    }
+
+    public static PostCodeResponseDto postCodeToPostCodeResDTO(PostCode postCode){
+        return new PostCodeResponseDto(postCode.getId(), postCode.getName(), postCode.getCity());
     }
 
 
