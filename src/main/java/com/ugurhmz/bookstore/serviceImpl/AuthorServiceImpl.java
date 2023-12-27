@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -26,6 +27,7 @@ public class AuthorServiceImpl implements AuthorService {
         this.postCodeRepository = postCodeRepository;
     }
 
+    // CREATE
     @Transactional
     @Override
     public AuthorResponseDto createAuthor(AuthorRequestDto authorRequestDto) {
@@ -40,12 +42,22 @@ public class AuthorServiceImpl implements AuthorService {
         Long postID = Optional.ofNullable(authorRequestDto.getPostCode())
                 .orElseThrow(() -> new IllegalArgumentException("Postcode ID cannot be empty !!"));
 
-       PostCode foundPostCode = postCodeRepository.findById(postID)
+        PostCode foundPostCode = postCodeRepository.findById(postID)
                .orElseThrow(() -> new IllegalArgumentException("Postcode not found with ID: " + postID));
        author.setPostCode(foundPostCode);
        Author savedAuthor = authorRepository.save(author);
        AuthorResponseDto authorResponseDto = Mapper.authorToAuthorResDTO(savedAuthor);
 
        return authorResponseDto;
+    }
+
+    // GET ALL AUTHORS
+    @Override
+    public List<AuthorResponseDto> getAllAuthors() {
+      List<Author> authorList = authorRepository.findAll();
+      return Optional.ofNullable(authorList)
+              .filter( author -> !author.isEmpty())
+              .map(Mapper::authorToAuthorResDTOS)
+              .orElseThrow( () -> new IllegalArgumentException("Authors list empty!"));
     }
 }
