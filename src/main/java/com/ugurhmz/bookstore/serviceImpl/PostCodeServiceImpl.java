@@ -85,8 +85,14 @@ public class PostCodeServiceImpl implements PostCodeService {
         return Mapper.postCodeToPostCodeResDTO(thatPostCode);
     }
 
+    // DELETE
+    @Transactional
     @Override
     public String deletePostCode(Long postCodeId) {
-        return null;
+      PostCode  thatPostCodeForDelete =  postCodeRepository.findById(postCodeId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not find postcode tp delete with id: " + postCodeId));
+
+      postCodeRepository.delete(thatPostCodeForDelete);
+      return "PostCode with ID: " + postCodeId + "has been deleted successfully.";
     }
 }

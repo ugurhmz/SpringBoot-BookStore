@@ -4,6 +4,7 @@ package com.ugurhmz.bookstore.controller;
 import com.ugurhmz.bookstore.dto.requestDto.PostCodeRequestDto;
 import com.ugurhmz.bookstore.dto.responseDto.PostCodeResponseDto;
 import com.ugurhmz.bookstore.service.PostCodeService;
+import jdk.jshell.spi.ExecutionControl;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,23 @@ public class PostCodeController {
             return new ResponseEntity<>(Collections.singletonMap("error", errMsg), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    // DELETE
+    @DeleteMapping("/delete/{postCodeId}")
+    public ResponseEntity<Map<String, String>> deletePostCode(@PathVariable Long postCodeId
+
+    ) {
+        try {
+           String deleteMsg =  postCodeService.deletePostCode(postCodeId);
+           return new ResponseEntity<>(Collections.singletonMap("message", deleteMsg),HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(Collections.singletonMap("error", e.getMessage()),HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            String errMSG = "Error while deleting postcode!!";
+            return new ResponseEntity<>(Collections.singletonMap("error", errMSG),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
