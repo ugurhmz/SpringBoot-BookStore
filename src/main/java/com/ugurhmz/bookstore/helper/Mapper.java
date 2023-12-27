@@ -34,12 +34,19 @@ public class Mapper {
         authorResponseDto.setId(author.getId());
         authorResponseDto.setName(author.getName());
 
-        List<String> names = new ArrayList<>();
-        author.getBookList().forEach( item -> names.add(item.getName()));
-        authorResponseDto.setBookNames(names);
-        authorResponseDto.setPostCodeName(author.getPostCode().getName());
+        List<String> bookNames = author.getBookList()
+                .stream()
+                .map(Book::getName)
+                .collect(Collectors.toList());
+        authorResponseDto.setBookNames(bookNames);
+
+        if (author.getPostCode() != null) {
+            authorResponseDto.setPostCodeName(author.getPostCode().getName());
+        }
+
         return authorResponseDto;
     }
+
 
     public static List<AuthorResponseDto> authorToAuthorResDTOS(List<Author> authorList) {
        List<AuthorResponseDto> authorResponseDtoList = new ArrayList<>();

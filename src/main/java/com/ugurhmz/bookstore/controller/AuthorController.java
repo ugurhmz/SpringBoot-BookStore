@@ -25,6 +25,7 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
+    // CREATE
     @PostMapping("/create-author")
     public ResponseEntity<Map<String, Object>> createAuthor(@RequestBody final AuthorRequestDto authorRequestDto) {
         try {
@@ -40,7 +41,7 @@ public class AuthorController {
         }
     }
 
-
+    // GET ALL AUTHORS
     @GetMapping("/get-all")
     public ResponseEntity<Map<String, Object>> getAllAuthors(){
         try {
@@ -53,5 +54,23 @@ public class AuthorController {
             String errMsg = "Error while getting all authors " + e.getMessage();
             return new ResponseEntity<>(Collections.singletonMap("error", errMsg), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // UPDATE AUTHOR
+    @PutMapping("/update/{authorId}")
+    public ResponseEntity<Map<String, Object>> updateAuthor(@PathVariable Long authorId,
+                                                            @RequestBody AuthorRequestDto authorRequestDto
+    ){
+        try {
+          AuthorResponseDto updatedAuthorRes =   authorService.updateAuthor(authorId, authorRequestDto);
+         return new ResponseEntity<>(Collections.singletonMap("message",updatedAuthorRes), HttpStatus.OK);
+        } catch(IllegalArgumentException e) {
+            return new ResponseEntity<>(Collections.singletonMap("error", e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            String errMsg = "Error while updating!!";
+            return new ResponseEntity<>(Collections.singletonMap("error", errMsg), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

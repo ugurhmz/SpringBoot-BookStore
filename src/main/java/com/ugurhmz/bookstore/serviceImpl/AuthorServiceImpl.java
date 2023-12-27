@@ -3,9 +3,11 @@ package com.ugurhmz.bookstore.serviceImpl;
 import com.ugurhmz.bookstore.dto.requestDto.AuthorRequestDto;
 import com.ugurhmz.bookstore.dto.responseDto.AuthorResponseDto;
 import com.ugurhmz.bookstore.entities.Author;
+import com.ugurhmz.bookstore.entities.Book;
 import com.ugurhmz.bookstore.entities.PostCode;
 import com.ugurhmz.bookstore.helper.Mapper;
 import com.ugurhmz.bookstore.repository.AuthorRepository;
+import com.ugurhmz.bookstore.repository.BookRepository;
 import com.ugurhmz.bookstore.repository.PostCodeRepository;
 import com.ugurhmz.bookstore.service.AuthorService;
 import jakarta.transaction.Transactional;
@@ -20,11 +22,13 @@ import java.util.Optional;
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
     private final PostCodeRepository postCodeRepository;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public AuthorServiceImpl(AuthorRepository authorRepository, PostCodeRepository postCodeRepository) {
+    public AuthorServiceImpl(AuthorRepository authorRepository, PostCodeRepository postCodeRepository, BookRepository bookRepository) {
         this.authorRepository = authorRepository;
         this.postCodeRepository = postCodeRepository;
+        this.bookRepository = bookRepository;
     }
 
     // CREATE
@@ -59,5 +63,38 @@ public class AuthorServiceImpl implements AuthorService {
               .filter( author -> !author.isEmpty())
               .map(Mapper::authorToAuthorResDTOS)
               .orElseThrow( () -> new IllegalArgumentException("Authors list empty!"));
+    }
+
+    // UPDATE
+    @Transactional
+    @Override
+    public AuthorResponseDto updateAuthor(Long authorId, AuthorRequestDto authorRequestDto) {
+        Author existingAuthor = authorRepository.findById(authorId)
+                .orElseThrow(() -> new IllegalArgumentException("Author not found with ID: " + authorId));
+
+        String updatedName = Optional.ofNullable(authorRequestDto.getName())
+                .map(String::trim)
+                .filter(name -> !name.isEmpty())
+                .orElseThrow(() -> new IllegalArgumentException("Author name cannot be empty or null"));
+        existingAuthor.setName(updatedName);
+
+
+        Optional.ofNullable(authorRequestDto.getPostCode())
+                .ifPresent(postCodeId -> {
+                    Long postCodeIdValue = Optional.ofNullable(postCodeId)
+                            .orElseThrow(() -> new IllegalArgumentException("Postcode ID cannot be empty"));
+                    PostCode postCode = postCodeRepository.findById(postCodeIdValue)
+                            .orElseThrow(() -> new IllegalArgumentException("Postcode not found with ID: " + postCodeIdValue));
+                    existingAuthor.setPostCode(postCode);
+        });
+
+        Optional.ofNullable(authorRequestDto.getBookIds())
+                .filter(bookIds -> !bookIds.isEmpty())
+                .ifPresent(bookIds -> {
+                    List<Book> updatedBooks = bookRepository.findAllById(bookIds);
+                    existingAuthor.setBookList(updatedBooks);
+        });
+        Author updatedAuthor = authorRepository.save(existingAuthor);
+        return Mapper.authorToAuthorResDTO(updatedAuthor);
     }
 }
