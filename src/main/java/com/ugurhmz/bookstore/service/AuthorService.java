@@ -11,4 +11,5 @@ public interface AuthorService {
     AuthorResponseDto createAuthor(AuthorRequestDto authorRequestDto);
     List<AuthorResponseDto> getAllAuthors();
     AuthorResponseDto updateAuthor(Long authorId,AuthorRequestDto authorRequestDto);
+    String deleteAuthor(Long authorId);
 }

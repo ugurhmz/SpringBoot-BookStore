@@ -73,4 +73,20 @@ public class AuthorController {
         }
 
     }
+
+
+    // DELETE AUTHOR
+    @DeleteMapping("/delete/{authorId}")
+    public ResponseEntity<Map<String, String>> deleteAuthor(@PathVariable Long authorId) {
+        try {
+            String deleteMsg =  authorService.deleteAuthor(authorId);
+            return new ResponseEntity<>(Collections.singletonMap("message", deleteMsg),HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(Collections.singletonMap("error", e.getMessage()),HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            String errMSG = "Error while deleting postcode!!";
+            return new ResponseEntity<>(Collections.singletonMap("error", errMSG),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

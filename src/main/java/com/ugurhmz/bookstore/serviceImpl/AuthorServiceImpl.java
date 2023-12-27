@@ -97,4 +97,20 @@ public class AuthorServiceImpl implements AuthorService {
         Author updatedAuthor = authorRepository.save(existingAuthor);
         return Mapper.authorToAuthorResDTO(updatedAuthor);
     }
+
+    // DELETE
+    @Transactional
+    public String deleteAuthor(Long authorId) {
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new IllegalArgumentException("Author not found with ID: " + authorId));
+
+        author.getBookList().forEach(book -> book.removeAuthor(author));
+
+        author.setPostCode(null);
+        authorRepository.delete(author);
+        return "Author with ID: " + authorId + "has been deleted successfully.";
+    }
+
+
+
 }

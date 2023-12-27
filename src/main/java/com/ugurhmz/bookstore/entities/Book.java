@@ -43,7 +43,8 @@ public class Book {
         authorList.add(author);
     }
 
-    public void deleteAuthor(Author author) {
+    public void removeAuthor(Author author) {
         authorList.remove(author);
+        author.getBookList().remove(this);
     }
 }
