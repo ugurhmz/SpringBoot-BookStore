@@ -51,7 +51,7 @@ public class PostCodeServiceImpl implements PostCodeService {
         return Mapper.postCodeToPostCodeResDTO(savedPostCode);
     }
 
-
+    // GET ONE
     @Override
     public PostCodeResponseDto getPostCode(Long postCodeId) {
        PostCode thatPostCode = postCodeRepository.findById(postCodeId)
@@ -60,10 +60,29 @@ public class PostCodeServiceImpl implements PostCodeService {
         System.out.println("mypostcode: " + thatPostCode);
        return Mapper.postCodeToPostCodeResDTO(thatPostCode);
     }
-
+    // UPDATE
+    @Transactional
     @Override
-    public PostCodeRequestDto updatePostCode(Long postCodeId, PostCodeRequestDto postCodeRequestDto) {
-        return null;
+    public PostCodeResponseDto updatePostCode(Long postCodeId, PostCodeRequestDto postCodeRequestDto) {
+        PostCode thatPostCode = postCodeRepository.findById(postCodeId)
+                .orElseThrow( () -> new IllegalArgumentException("Could not find postcode with ID: " +postCodeId));
+
+        String postCodeNameNullChecked  = Optional.ofNullable(postCodeRequestDto.getName())
+                .map(String::trim)
+                .filter( name -> !name.isEmpty())
+                .orElseThrow( () -> new IllegalArgumentException("Postcode name cannot be empty or null !!"));
+
+        thatPostCode.setName(postCodeNameNullChecked);
+
+        Optional.ofNullable(postCodeRequestDto.getCityId())
+                .flatMap(cityId -> cityRepository.findById(cityId)
+                        .map(city -> {
+                            thatPostCode.setCity(city);
+                            return city;
+                        }))
+                .orElseThrow(() -> new IllegalArgumentException("City not found with id: " + postCodeRequestDto.getCityId()));
+
+        return Mapper.postCodeToPostCodeResDTO(thatPostCode);
     }
 
     @Override

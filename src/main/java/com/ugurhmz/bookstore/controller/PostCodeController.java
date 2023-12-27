@@ -4,6 +4,7 @@ package com.ugurhmz.bookstore.controller;
 import com.ugurhmz.bookstore.dto.requestDto.PostCodeRequestDto;
 import com.ugurhmz.bookstore.dto.responseDto.PostCodeResponseDto;
 import com.ugurhmz.bookstore.service.PostCodeService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class PostCodeController {
 
     // GET ONE
     @GetMapping("/{postCodeId}")
-    public ResponseEntity<Map<String, Object>> getPostCodeWithId(@PathVariable Long postCodeId){
+    public ResponseEntity<Map<String, Object>> getPostCodeWithId(@PathVariable  Long postCodeId){
       try {
         PostCodeResponseDto postCodeResponseDto =   postCodeService.getPostCode(postCodeId);
         return new ResponseEntity<>(Collections.singletonMap("message", postCodeResponseDto),HttpStatus.OK);
@@ -53,4 +54,23 @@ public class PostCodeController {
           return new ResponseEntity<>(Collections.singletonMap("error:",errMsg), HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
+
+    // UPDATE
+    @PutMapping("/update/{postCodeId}")
+    public ResponseEntity<Map<String, Object>> updatePostCode(@PathVariable  Long postCodeId,
+                                                              @RequestBody final PostCodeRequestDto postCodeRequestDto )
+    {
+        try {
+            PostCodeResponseDto postCodeResponseDto = postCodeService.updatePostCode(postCodeId, postCodeRequestDto);
+            return new ResponseEntity<>(Collections.singletonMap("message", postCodeResponseDto), HttpStatus.OK);
+        } catch(IllegalArgumentException e) {
+            return new ResponseEntity<>(Collections.singletonMap("error", e.getMessage()),HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            String errMsg = "Error while updating postCode";
+            return new ResponseEntity<>(Collections.singletonMap("error", errMsg), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 }

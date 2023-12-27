@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
 public interface PostCodeService {
     PostCodeResponseDto createPostCode(PostCodeRequestDto postCodeRequestDto);
     PostCodeResponseDto getPostCode(Long postCodeId);
-    PostCodeRequestDto updatePostCode(Long postCodeId, PostCodeRequestDto postCodeRequestDto);
+    PostCodeResponseDto updatePostCode(Long postCodeId, PostCodeRequestDto postCodeRequestDto);
     String deletePostCode(Long postCodeId);
 }
