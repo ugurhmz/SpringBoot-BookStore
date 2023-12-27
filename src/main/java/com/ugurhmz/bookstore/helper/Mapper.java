@@ -90,6 +90,4 @@ public class Mapper {
     public static PostCodeResponseDto postCodeToPostCodeResDTO(PostCode postCode){
         return new PostCodeResponseDto(postCode.getId(), postCode.getName(), postCode.getCity());
     }
-
-
 }

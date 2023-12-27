@@ -2,13 +2,9 @@ package com.ugurhmz.bookstore.dto.responseDto;
 
 import lombok.Data;
 
-import java.util.List;
 
 @Data
-public class CategoryResponseDto {
+public class CategoryResWithOutBookNamesDto {
     private Long id;
     private String categoryName;
-    private List<String> bookNames;
 }
-
-
